@@ -1,0 +1,299 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<math.h>
+#define MAXSIZE 200
+#define MAX 200
+
+//栈结构体
+typedef struct
+{
+	double data[MAXSIZE];
+	int top;
+}stack;
+
+stack *create_stack();  //创建栈
+int stack_push(stack *, double); //入栈
+int stack_pop(stack *, double *); //出栈
+int get_stacktop(stack *, double *);
+int is_empty(stack *); 
+
+stack *num_stack, *op_stack; // 定义两个指向栈结构体的指针
+
+void prcs_str();//解析字符数组
+double factorial(double x);//阶乘运算
+char str[MAX];//字符数组
+double value = 0;   //数字的值
+int mark = 0;//标记是是否解析出数字
+double prev_op;//存放上一个操作符
+static double n = 0.0, n1 = 0.0, n2 = 0.0;//cal()中的变量，设置成全局变量用来算阶乘
+int t;//设置一个全局变量用来临时储存字符串角标，用来进行某些字符的替换
+int i = 0; //设置一个全局变量用来临时储存字符串角标，用来查找特定字符
+
+stack *create_stack()
+{
+	stack *p_stack;
+	p_stack = (stack *)malloc(sizeof(*p_stack));
+	p_stack->top = -1;
+	return p_stack;
+}
+
+int stack_push(stack *p_stack, double x)
+{	//如果入栈超出栈空间
+	if (p_stack->top == MAXSIZE - 1) return -1;
+	p_stack->data[++p_stack->top] = x;//压栈
+	return 0;
+}
+
+int stack_pop(stack *p_stack, double *x)
+{	//如果出栈超出栈空间
+	if (p_stack->top == -1) 
+		return -1;
+	*x = p_stack->data[p_stack->top--];
+	return 0;
+}
+
+int get_stacktop(stack *p_stack, double *x)
+{
+	if (p_stack->top == -1) return -1;
+	*x = p_stack->data[p_stack->top];
+	return 0;
+}
+
+int is_empty(stack *p_stack)
+{
+	return (p_stack->top == -1);
+}
+
+int prioritize(int op)
+{
+	switch (op)
+	{
+	case '(': return 0; case '+': case '-': return 1;
+	case '*': case '/': return 2;
+	case '^': return 3;
+	case 's': case 'c': case 't': case 'e': case 'l': return 4;
+	default: return -1;
+	}
+}
+
+void cal(stack *snum, int op)
+{
+	stack_pop(snum, &n1);
+	stack_pop(snum, &n2);
+	//计算
+	switch (op){
+		case 's': if (n == 0.0 && n2 == 0.0) { n = sin(n1 * 3.1415926 / 180.0); str[t] = 'n'; }
+					else { n = sin(n* 3.1415926 / 180.0); str[t] = 'n'; } break;
+		case 'c': if (n == 0.0 && n2 == 0.0) { n = cos(n1 * 3.1415926 / 180.0); str[t] = 'n'; }
+					else { n = cos(n * 3.1415926 / 180.0); str[t] = 's'; } break;
+		case 't': if (n == 0.0 && n2 == 0.0) { n = tan(n1 * 3.1415926 / 180.0); str[t] = 'n'; }
+					else { n = tan(n * 3.1415926 / 180.0); str[t] = 'n'; } break;
+		case 'e': if (n == 0.0 && n2 == 0.0) { n = log(n1); str[t] = 'g'; }
+					else { n = log(n1); str[t] = 'g'; } break;
+		case 'l': if (n == 0.0 && n2 == 0.0) { n = log10(n1); str[t] = '0'; }
+					else { n = log10(n1); str[t] = '0'; } break;
+		case '^': n = pow(n2, n1); break;
+		case '+': n = n1 + n2; break;
+		case '-': n = n2 - n1; break;
+		case '*': n = n1 * n2; break;
+		case '/': n = n2 / n1; break;
+		case '!': n = factorial(n);
+	}
+	stack_push(snum, n);
+}
+
+void prcs_op(stack *snum, stack *stack_op, int op)
+{
+	double prev_op;
+	if (is_empty(stack_op) || op == '('){
+		stack_push(stack_op, op);
+		return;
+	}
+	
+	get_stacktop(stack_op, &prev_op);
+	if (prioritize(op) > prioritize(prev_op)){
+		stack_push(stack_op, op);//传入符号大于当前栈顶，则将传入符号入栈
+		return;
+	}
+	while (prioritize(op) <= prioritize(prev_op)){
+		stack_pop(stack_op, &prev_op);
+		cal(snum, prev_op);
+
+		if (is_empty(stack_op))//如果计算完毕之后符号栈为空则break;
+			break;
+		get_stacktop(stack_op, &prev_op);
+	}
+	stack_push(stack_op, op);
+}
+
+void prcs_bracket(stack *snum, stack *stack_op)
+{
+	double prev_op;
+	get_stacktop(stack_op, &prev_op);
+	while (prev_op != '('){
+		stack_pop(stack_op, &prev_op);
+		cal(snum, prev_op);
+		get_stacktop(stack_op, &prev_op);
+	}
+	if (prev_op == '(' && str[i + 1] == '!'){
+		stack_push(snum, factorial(n));
+		i++;
+	}
+
+	stack_pop(stack_op, &prev_op);
+}
+
+void prcs_str()
+{
+	int max = MAX;
+	num_stack = create_stack();
+	op_stack = create_stack();
+	
+	for (int j = 0; j < max; j++){//过滤空格
+		if (str[j] == ' '){
+			int m = j;//中间变量
+			do {
+				max--;
+				int k = j;
+				while ((k + 1) < max){
+					int t;//中间变量
+					t = str[k];
+					str[k] = str[k + 1];
+					str[k++ + 1] = t;
+				}
+			} while (str[m] == ' ' && j <= max);
+		}
+	}
+	//解析浮点数需要的变量
+	int count, count1;//利用其差值计算一个数的整数部分长度
+	int count2, count3;//利用其差值计算一个数的小数部分长度
+	int flag = 0;
+	int flag1 = 0;
+	int n;//如果是数字，则将数字段的初始角标赋给n，将n赋给countx，之后n随数字长度自增，再将其赋给countx，以得到整数及小数部分长度
+		  //以下算法可用stdlib中的atof()替代
+	while (str[i] != '\0'){/*将表达式字符串进行解析,然后将高优先级的符号/(*)进行计算重新入栈退出while大家的优先级都一样+-*/
+		//获取输入的数字
+		if (str[i] == 'p' && str[i + 1] == 'i'){//pi
+			i++;
+			value = acos(-1.0);
+			mark = 1;
+		}
+		else if (str[i] == 'e'){//e
+			value = exp(1);
+			mark = 1;
+			i++;
+		}
+		else if (str[i - 1] == '(' && str[i] == '-' && ((str[i + 1] >= '0' && str[i + 1] <= '9') || str[i] == acos(-1.0) || str[i] == exp(1))){
+			flag = 1;
+			i++;
+		}
+		else if ((str[i] >= '0' && str[i] <= '9') || str[i] == '.'){
+			mark = 1;
+			count = i;
+			n = i;
+			while (str[n] >= '0' && str[n] <= '9'){
+				count1 = n;
+				n++;
+			}
+			{
+				for (int k = count1 - count, m = 0; k >= 0; k--, m++){
+					flag == 1 ? value = value - (str[n - 1 - (count1 - count) + m] - 48) * pow(10, k) : value = value + (str[n - 1 - (count1 - count) + m] - 48) * pow(10, k);
+				}
+				if (flag){
+					flag = 0;
+					flag1 = 1;
+				}
+			}
+			if (str[n] == '!'){
+				value = factorial(value);
+				i++;
+			}
+			else if (str[n] == '.' && flag1 == 1){//解析负浮点数
+				count2 = 0;
+				for (int k = 1; str[n + 1] >= '0' && str[n + 1] <= '9'; n++, k++){
+					value = value - (str[n + 1] - 48) / pow(10, k);
+					count3 = k;
+				}
+				i += count1 - count + 1 + count3 - count2 + 1;
+				continue;
+			}
+			else if (str[n] == '.' && flag1 == 0){//解析负浮点数
+				count2 = 0;
+				for (int k = 1; str[n + 1] >= '0' && str[n + 1] <= '9'; n++, k++){
+					value = value + (str[n + 1] - 48) / pow(10, k);
+					count3 = k;
+				}
+				i += count1 - count + 1 + count3 - count2 + 1;
+				continue;
+			}
+			i += count1 - count + 1;
+		}
+
+		else{//op
+			if (mark){//mark = 1说明value里面存储了数字，将其入栈
+				stack_push(num_stack, value);
+				//num标志清零，value存放数字的变量清零
+				mark = 0;
+				value = 0;
+			}
+			if (str[i] == ')')//((str[i] == ')' && str[i + 1] == '!') || str[i] == ')' || str[i] == '!')
+				prcs_bracket(num_stack, op_stack);//如果是右括号，则计算括号内运算
+			else{//+-*/(等情况 
+				if (str[i] == 's' && str[i + 1] == 'i' && str[i + 2] == 'n') { i += 2; str[i] = 's'; t = i; }
+				else if (str[i] == 'c' && str[i + 1] == 'o' && str[i + 2] == 's') { i += 2; str[i] = 'c'; t = i; }
+				else if (str[i] == 't' && str[i + 1] == 'a' && str[i + 2] == 'n') { i += 2; str[i] = 't'; t = i; }
+				else if (str[i] == 'l' && str[i + 1] == 'o' && str[i + 2] == 'g' && (str[i + 3] != '1') && (str[i + 4] != '0')) { i += 2; str[i] = 'e'; t = i; }
+				else if (str[i] == 'l' && str[i + 1] == 'o' && str[i + 2] == 'g' && str[i + 3] == '1'&& str[i + 4] == '0') { i += 4; str[i] = 'l'; t = i; }
+				else if (str[i] != ' ' && !(str[i] >= 40 && str[i] <= 47) && str[i] != 33 && str[i] != 94 && str[i] != 'p' && str[i] != 'i' && str[i] != 'e'){
+					printf("ERROR:Non-identifiable symbol(s) existed.");
+					exit(1);
+				}
+				prcs_op(num_stack, op_stack, str[i]);//优先级高的符号进栈  如果栈顶符号优先级更高，则进行两个数字间的运算
+			}
+			i++;
+		}
+	}
+}
+
+double factorial(double x)
+{
+	if (x <= 1) return 1;
+	else return x * factorial(x - 1);
+}
+
+int main()
+{
+	char m;//存放输入操作指令
+	printf("********************* The C Calculator **********************\n*  SUPPORT:                                                 *\n*                                                           *\n*  1.Four arithmetic operation.( + | - | * | / );           *\n*  2.Numbers with plus - minus sign;                        *\n*  3.Power operation.( x ^ y );                             *\n*  4.Logarithmic operation(Based on 10 or e only);          *\n*  5.Trigonometric function ( sin | cos | tan );            *\n*  6.Factorial operation(!);                                *\n*  7.Circumference ratio (pi) input;                        *\n*  8.Euler number (e) input;                                *\n*  9.Floating point number.                                 *\n*                                                           *\n********************* The C Calculator **********************\n\n");
+	printf("Now, if the expression is to be input by reading the target file, press 'r', else, press 'i' to input the expression: ");
+	fflush(stdin);//清空缓冲区
+	scanf("%c", &m);
+	getchar();//吸收输入的换行符，以防止gets_s()/gets()/getchar()自动返回
+	if (m == 'i'){//从stdin读取
+		int r = 0;
+		printf("\nPlease input an expression:\n\n");
+		gets_s(str);
+		putchar('\n');
+	}
+	else if (m == 'r'){//文件读取模式
+		int r = 0;
+		putchar('\n');
+		FILE *fp = fopen("TargetFile.txt", "r");
+		while (!feof(fp))
+			fscanf(fp, "%c", &str[r++]);
+		fclose(fp);
+	}
+
+	prcs_str();//解析字符数组
+	//如果mark = 1.说明value里面还有数值,将其入栈 
+	if (mark) stack_push(num_stack, value);
+	while (!is_empty(op_stack)){
+		stack_pop(op_stack, &prev_op);
+		cal(num_stack, prev_op);
+	}
+	stack_pop(num_stack, &value);
+	printf("The result is: %.16g\n\n", value);
+
+	return 0;
+}
+//字符串读取方式若改为getchar(), 在过滤空格的操作上会简便很多，且可用atof()函数进行数字解析，更加简便
