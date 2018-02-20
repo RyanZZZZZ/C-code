@@ -82,12 +82,12 @@ void cal(stack *sum, int op)
 	stack_pop(sum, &n2);
 	//计算
 	switch (op) {
-	case 's': if (n == 0.0 && n2 == 0.0) { n = sin(n1 * 3.1415926 / 180.0); str[t] = 'n'; }
-			  else { n = sin(n* 3.1415926 / 180.0); str[t] = 'n'; } break;
-	case 'c': if (n == 0.0 && n2 == 0.0) { n = cos(n1 * 3.1415926 / 180.0); str[t] = 'n'; }
-			  else { n = cos(n * 3.1415926 / 180.0); str[t] = 's'; } break;
-	case 't': if (n == 0.0 && n2 == 0.0) { n = tan(n1 * 3.1415926 / 180.0); str[t] = 'n'; }
-			  else { n = tan(n * 3.1415926 / 180.0); str[t] = 'n'; } break;
+	case 's': if (n == 0.0 && n2 == 0.0) { n = sin(n1 * acos(-1.0) / 180.0); str[t] = 'n'; }
+			  else { n = sin(n* acos(-1.0) / 180.0); str[t] = 'n'; } break;
+	case 'c': if (n == 0.0 && n2 == 0.0) { n = cos(n1 * acos(-1.0) / 180.0); str[t] = 'n'; }
+			  else { n = cos(n * acos(-1.0) / 180.0); str[t] = 's'; } break;
+	case 't': if (n == 0.0 && n2 == 0.0) { n = tan(n1 * acos(-1.0) / 180.0); str[t] = 'n'; }
+			  else { n = tan(n * acos(-1.0) / 180.0); str[t] = 'n'; } break;
 	case 'e': if (n == 0.0 && n2 == 0.0) { n = log(n1); str[t] = 'g'; }
 			  else { n = log(n1); str[t] = 'g'; } break;
 	case 'l': if (n == 0.0 && n2 == 0.0) { n = log10(n1); str[t] = '0'; }
@@ -228,32 +228,32 @@ void prcs_str()
 			}
 			i += count1 - count + 1;
 		}
-		
 
-		
-else {//op
-	if (mark) {//mark = 1说明value里面存储了数字，将其入栈
-		stack_push(num_stack, value);
-		//num标志清零，value存放数字的变量清零
-		mark = 0;
-		value = 0;
-	}
-	if (str[i] == ')')//((str[i] == ')' && str[i + 1] == '!') || str[i] == ')' || str[i] == '!')
-		prcs_bracket(num_stack, op_stack);
-	else {//+-*/(等情况 
-		if (str[i] == 's' && str[i + 1] == 'i' && str[i + 2] == 'n') { i += 2; str[i] = 's'; t = i; }
-		else if (str[i] == 'c' && str[i + 1] == 'o' && str[i + 2] == 's') { i += 2; str[i] = 'c'; t = i; }
-		else if (str[i] == 't' && str[i + 1] == 'a' && str[i + 2] == 'n') { i += 2; str[i] = 't'; t = i; }
-		else if (str[i] == 'l' && str[i + 1] == 'o' && str[i + 2] == 'g' && (str[i + 3] != '1') && (str[i + 4] != '0')) { i += 2; str[i] = 'e'; t = i; }
-		else if (str[i] == 'l' && str[i + 1] == 'o' && str[i + 2] == 'g' && str[i + 3] == '1'&& str[i + 4] == '0') { i += 4; str[i] = 'l'; t = i; }
-		else if (str[i] != ' ' && !(str[i] >= 40 && str[i] <= 47) && str[i] != 33 && str[i] != 94 && str[i] != 'p' && str[i] != 'i' && str[i] != 'e') {
-			printf("ERROR:Non-identifiable symbol(s) existed.");
-			exit(1);
+
+
+		else {//op
+			if (mark) {//mark = 1说明value里面存储了数字，将其入栈
+				stack_push(num_stack, value);
+				//num标志清零，value存放数字的变量清零
+				mark = 0;
+				value = 0;
+			}
+			if (str[i] == ')')//((str[i] == ')' && str[i + 1] == '!') || str[i] == ')' || str[i] == '!')
+				prcs_bracket(num_stack, op_stack);
+			else {//+-*/(等情况 
+				if (str[i] == 's' && str[i + 1] == 'i' && str[i + 2] == 'n') { i += 2; str[i] = 's'; t = i; }
+				else if (str[i] == 'c' && str[i + 1] == 'o' && str[i + 2] == 's') { i += 2; str[i] = 'c'; t = i; }
+				else if (str[i] == 't' && str[i + 1] == 'a' && str[i + 2] == 'n') { i += 2; str[i] = 't'; t = i; }
+				else if (str[i] == 'l' && str[i + 1] == 'o' && str[i + 2] == 'g' && (str[i + 3] != '1') && (str[i + 4] != '0')) { i += 2; str[i] = 'e'; t = i; }
+				else if (str[i] == 'l' && str[i + 1] == 'o' && str[i + 2] == 'g' && str[i + 3] == '1'&& str[i + 4] == '0') { i += 4; str[i] = 'l'; t = i; }
+				else if (str[i] != ' ' && !(str[i] >= 40 && str[i] <= 47) && str[i] != 33 && str[i] != 94 && str[i] != 'p' && str[i] != 'i' && str[i] != 'e') {
+					printf("ERROR:Non-identifiable symbol(s) existed.");
+					exit(1);
+				}
+				prcs_op(num_stack, op_stack, str[i]);
+			}
+			i++;
 		}
-		prcs_op(num_stack, op_stack, str[i]);
-	}
-	i++;
-}
 	}
 }
 
