@@ -76,10 +76,10 @@ int prioritize(int op)
 	}
 }
 
-void cal(stack *snum, int op)
+void cal(stack *sum, int op)
 {
-	stack_pop(snum, &n1);
-	stack_pop(snum, &n2);
+	stack_pop(sum, &n1);
+	stack_pop(sum, &n2);
 	//计算
 	switch (op) {
 	case 's': if (n == 0.0 && n2 == 0.0) { n = sin(n1 * 3.1415926 / 180.0); str[t] = 'n'; }
@@ -99,10 +99,10 @@ void cal(stack *snum, int op)
 	case '/': n = n2 / n1; break;
 	case '!': n = factorial(n);
 	}
-	stack_push(snum, n);
+	stack_push(sum, n);
 }
 
-void prcs_op(stack *snum, stack *stack_op, int op)
+void prcs_op(stack *sum, stack *stack_op, int op)
 {
 	double prior_op;
 	if (is_empty(stack_op) || op == '(') {
@@ -117,7 +117,7 @@ void prcs_op(stack *snum, stack *stack_op, int op)
 	}
 	while (prioritize(op) <= prioritize(prior_op)) {
 		stack_pop(stack_op, &prior_op);
-		cal(snum, prior_op);
+		cal(sum, prior_op);
 
 		if (is_empty(stack_op))
 			break;
@@ -126,17 +126,17 @@ void prcs_op(stack *snum, stack *stack_op, int op)
 	stack_push(stack_op, op);
 }
 
-void prcs_bracket(stack *snum, stack *stack_op)
+void prcs_bracket(stack *sum, stack *stack_op)
 {
 	double prior_op;
 	get_stacktop(stack_op, &prior_op);
 	while (prior_op != '(') {
 		stack_pop(stack_op, &prior_op);
-		cal(snum, prior_op);
+		cal(sum, prior_op);
 		get_stacktop(stack_op, &prior_op);
 	}
 	if (prior_op == '(' && str[i + 1] == '!') {
-		stack_push(snum, factorial(n));
+		stack_push(sum, factorial(n));
 		i++;
 	}
 
@@ -228,9 +228,9 @@ void prcs_str()
 			}
 			i += count1 - count + 1;
 		}
+		
 
-
-		else { printf("\nERROR:Non-identifiable operation code.\n\n"); exit(1); }
+		
 else {//op
 	if (mark) {//mark = 1说明value里面存储了数字，将其入栈
 		stack_push(num_stack, value);
