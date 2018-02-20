@@ -296,7 +296,8 @@ int main()
 	}
 	stack_pop(num_stack, &value);
 	printf("The result is: %.16g\n\n", value);
-
+	free(num_stack);
+	free(op_stack);
 	return 0;
 }
 //字符串读取方式若改为getchar(), 在过滤空格的操作上会简便很多，且可用atof()函数进行数字解析，更加简便
