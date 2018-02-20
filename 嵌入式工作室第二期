@@ -269,7 +269,7 @@ int main()
 	printf("Now, if the expression is to be input by reading the target file, press 'r', else, press 'i' to input the expression: ");
 	fflush(stdin);//清空缓冲区
 	scanf("%c", &m);
-	getchar();//吸收输入的换行符，以防止gets_s()/gets()/getchar()自动返回
+	while ((ch = getchar())!= '\n');
 	if (m == 'i') {//从stdin读取
 		int r = 0;
 		printf("\nPlease input an expression:\n\n");
