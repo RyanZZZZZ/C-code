@@ -21,8 +21,8 @@ stack *num_stack, *op_stack;
 void prcs_str();//解析字符数组
 double factorial(double x);//阶乘运算
 char str[MAX];//字符数组
-double value = 0;   //数字的值
-int mark = 0;//标记是是否解析出数字
+double value = 0;//当前的数值
+int mark = 0;//标记是否已解析出数字
 double prior_op;//存放上一个操作符
 static double n = 0.0, n1 = 0.0, n2 = 0.0;//cal()中的变量，设置成全局变量用来算阶乘
 int t;//设置一个全局变量用来临时储存字符串角标，用来进行某些字符的替换
