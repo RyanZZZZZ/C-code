@@ -264,7 +264,7 @@ double factorial(double x)
 
 int main()
 {
-	char m;//存放输入操作指令
+	char m, ch;//存放输入操作指令
 	printf("********************* The C Calculator **********************\n*  SUPPORT:                                                 *\n*                                                           *\n*  1.Four arithmetic operation.( + | - | * | / );           *\n*  2.Numbers with plus - minus sign;                        *\n*  3.Power operation.( x ^ y );                             *\n*  4.Logarithmic operation(Based on 10 or e only);          *\n*  5.Trigonometric function ( sin | cos | tan );            *\n*  6.Factorial operation(!);                                *\n*  7.Circumference ratio (pi) input;                        *\n*  8.Euler number (e) input;                                *\n*  9.Floating point number.                                 *\n*                                                           *\n********************* The C Calculator **********************\n\n");
 	printf("Now, if the expression is to be input by reading the target file, press 'r', else, press 'i' to input the expression: ");
 	fflush(stdin);//清空缓冲区
