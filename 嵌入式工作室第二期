@@ -39,7 +39,7 @@ stack *create_stack()
 int stack_push(stack *p_stack, double x)
 {
 	if (p_stack->top == MAXSIZE - 1) return -1;
-	p_stack->data[++p_stack->top] = x;//压栈
+	p_stack->data[++p_stack->top] = x;
 	return 0;
 }
 
@@ -79,7 +79,6 @@ void cal(stack *sum, int op)
 {
 	stack_pop(sum, &n1);
 	stack_pop(sum, &n2);
-	//计算
 	switch (op) {
 	case 's': if (n == 0.0 && n2 == 0.0) { n = sin(n1 * acos(-1.0) / 180.0); str[t] = 'n'; }
 			  else { n = sin(n* acos(-1.0) / 180.0); str[t] = 'n'; } break;
@@ -169,7 +168,7 @@ void prcs_str()
 	int flag = 0;
 	int flag1 = 0;
 	int n;//如果是数字，则将数字段的初始角标赋给n，将n赋给countx，之后n随数字长度自增，再将其赋给countx，以得到整数及小数部分长度
-		  //以下算法可用stdlib中的atof()替代
+	//以下算法可用stdlib中的atof()替代
 	while (str[i] != '\0') {/*将表达式字符串进行解析,然后将高优先级的符号/(*)进行计算重新入栈退出while大家的优先级都一样+-*/
 							//获取输入的数字
 		if (str[i] == 'p' && str[i + 1] == 'i') {//pi
