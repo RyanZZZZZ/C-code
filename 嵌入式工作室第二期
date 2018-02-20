@@ -217,7 +217,7 @@ void prcs_str()
 				i += count1 - count + 1 + count3 - count2 + 1;
 				continue;
 			}
-			else if (str[n] == '.' && flag1 == 0) {//解析负浮点数
+			else if (str[n] == '.' && flag1 == 0) {//解析正浮点数
 				count2 = 0;
 				for (int k = 1; str[n + 1] >= '0' && str[n + 1] <= '9'; n++, k++) {
 					value = value + (str[n + 1] - 48) / pow(10, k);
