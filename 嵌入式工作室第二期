@@ -4,7 +4,6 @@
 #define MAXSIZE 200
 #define MAX 200
 
-//栈结构体
 typedef struct
 {
 	double data[MAXSIZE];
