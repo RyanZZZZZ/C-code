@@ -11,13 +11,13 @@ typedef struct
 	int top;
 }stack;
 
-stack *create_stack();  //创建栈
-int stack_push(stack *, double); //入栈
-int stack_pop(stack *, double *); //出栈
+stack *create_stack(); 
+int stack_push(stack *, double); 
+int stack_pop(stack *, double *);
 int get_stacktop(stack *, double *);
 int is_empty(stack *); 
 
-stack *num_stack, *op_stack; // 定义两个指向栈结构体的指针
+stack *num_stack, *op_stack; 
 
 void prcs_str();//解析字符数组
 double factorial(double x);//阶乘运算
@@ -38,14 +38,14 @@ stack *create_stack()
 }
 
 int stack_push(stack *p_stack, double x)
-{	//如果入栈超出栈空间
+{	
 	if (p_stack->top == MAXSIZE - 1) return -1;
 	p_stack->data[++p_stack->top] = x;//压栈
 	return 0;
 }
 
 int stack_pop(stack *p_stack, double *x)
-{	//如果出栈超出栈空间
+{	
 	if (p_stack->top == -1) 
 		return -1;
 	*x = p_stack->data[p_stack->top--];
@@ -112,14 +112,14 @@ void prcs_op(stack *snum, stack *stack_op, int op)
 	
 	get_stacktop(stack_op, &prev_op);
 	if (prioritize(op) > prioritize(prev_op)){
-		stack_push(stack_op, op);//传入符号大于当前栈顶，则将传入符号入栈
+		stack_push(stack_op, op);
 		return;
 	}
 	while (prioritize(op) <= prioritize(prev_op)){
 		stack_pop(stack_op, &prev_op);
 		cal(snum, prev_op);
 
-		if (is_empty(stack_op))//如果计算完毕之后符号栈为空则break;
+		if (is_empty(stack_op))
 			break;
 		get_stacktop(stack_op, &prev_op);
 	}
@@ -229,7 +229,8 @@ void prcs_str()
 			i += count1 - count + 1;
 		}
 
-		else{//op
+
+else { printf("\nERROR:Non-identifiable operation code.\n\n"); exit(1); }else{//op
 			if (mark){//mark = 1说明value里面存储了数字，将其入栈
 				stack_push(num_stack, value);
 				//num标志清零，value存放数字的变量清零
@@ -237,7 +238,7 @@ void prcs_str()
 				value = 0;
 			}
 			if (str[i] == ')')//((str[i] == ')' && str[i + 1] == '!') || str[i] == ')' || str[i] == '!')
-				prcs_bracket(num_stack, op_stack);//如果是右括号，则计算括号内运算
+				prcs_bracket(num_stack, op_stack);
 			else{//+-*/(等情况 
 				if (str[i] == 's' && str[i + 1] == 'i' && str[i + 2] == 'n') { i += 2; str[i] = 's'; t = i; }
 				else if (str[i] == 'c' && str[i + 1] == 'o' && str[i + 2] == 's') { i += 2; str[i] = 'c'; t = i; }
@@ -248,7 +249,7 @@ void prcs_str()
 					printf("ERROR:Non-identifiable symbol(s) existed.");
 					exit(1);
 				}
-				prcs_op(num_stack, op_stack, str[i]);//优先级高的符号进栈  如果栈顶符号优先级更高，则进行两个数字间的运算
+				prcs_op(num_stack, op_stack, str[i]);
 			}
 			i++;
 		}
@@ -283,9 +284,10 @@ int main()
 			fscanf(fp, "%c", &str[r++]);
 		fclose(fp);
 	}
-
+	else { printf("\nERROR:Non-identifiable operation code.\n\n"); exit(1); }
+	
 	prcs_str();//解析字符数组
-	//如果mark = 1.说明value里面还有数值,将其入栈 
+	
 	if (mark) stack_push(num_stack, value);
 	while (!is_empty(op_stack)){
 		stack_pop(op_stack, &prev_op);
